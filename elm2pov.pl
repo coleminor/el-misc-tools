@@ -1,8 +1,28 @@
 #!/usr/bin/perl
+#
+# elm2pov.pl
+#
+#    Copyright 2013 Cole Minor <c.minor@inbox.com>
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, either version 3 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+#
+
 use warnings;
 use strict;
 
-our $VERSION = 0.6; # 2013-06-15
+our $VERSION = 0.7;
 
 use Carp qw(confess);
 use Data::Dumper; $Data::Dumper::Indent = 1;
