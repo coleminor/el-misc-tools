@@ -191,6 +191,16 @@ sub map_basename {
   return $n;
 }
 
+sub was_deleted {
+  my ($o) = @_;
+  # In order to not change the ordering of objects in the map
+  # (and hence their IDs) the editor just marks them as "deleted",
+  # and the client subsequently ignores them.
+  # editor: misc.c +191 kill_3d_object(): sets blended = 20
+  # client: io/map_io.c +320 do_load_map(): ignores if blended == 20
+  return exists $o->{blending_level} && $o->{blending_level} == 20;
+}
+
 sub load_entities {
   my ($k) = @_;
   my %d;
@@ -198,12 +208,11 @@ sub load_entities {
   my $c = 0;
   for my $o (@{$map->{$k . '_objects'}}) {
     my $n = $o->{entity_name};
-    next if exists $d{$n};
-    if (exists $o->{blending_level} and $o->{blending_level} == 20) {
-      # io/map_io.c +320 do_load_map(): seems to ignore if blended == 20
-      vprint "Skipping object $o->{id} $n, marked as \"invisible\"\n";
+    if (was_deleted $o) {
+      vprint "Skipping object $o->{id} '$n', marked as \"deleted\"\n";
       next;
     }
+    next if exists $d{$n};
     vprint "Loading $k entity '$n' ...\n";
     my $e = $l->load($n);
     if (!$e) {
@@ -577,6 +586,7 @@ EOS
   vprint "Emitted $c quad entity declarations\n";
   $c = 0;
   for my $o (@{$map->{quad_objects}}) {
+    next if was_deleted $o;
     my $e = $o->{entity_name};
     next unless $map->{quad_entities}{$e};
     my $n = entity_pov $e;
@@ -664,6 +674,7 @@ EOS
   vprint "Emitted $c mesh entity declarations\n";
   $c = 0;
   for my $o (@{$map->{mesh_objects}}) {
+    next if was_deleted $o;
     my $e = $o->{entity_name};
     next unless $map->{mesh_entities}{$e};
     my $n = entity_pov $e;
