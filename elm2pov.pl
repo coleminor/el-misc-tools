@@ -500,6 +500,16 @@ sub texture_pov {
   return "Texture_$n";
 }
 
+sub emit_placeholder_texture {
+  return if exists $ctx->{placeholder_texture};
+  my $n = 'NOT_FOUND';
+  my $t = texture_pov $n;
+  em<<"EOS";
+#declare $t = texture { pigment { color rgb <1,1,1> } }
+EOS
+  $ctx->{placeholder_texture} = $n;
+}
+
 sub emit_quads {
   my $c = 0;
   my %tv;
@@ -509,7 +519,10 @@ sub emit_quads {
     my $t = $e->{texture_name};
     next if $tv{$t}++;
     my $i = find_quad_texture $t;
-    next unless $i;
+    unless ($i) {
+      emit_placeholder_texture;
+      next;
+    }
     my $n = texture_pov $i;
     em<<"EOS";
 #declare $n = texture {
@@ -539,6 +552,11 @@ EOS
     em "\n  }\n";
     if (1) {
       my $i = find_quad_texture $e->{texture_name};
+      unless ($i) {
+        warn "WARNING: texture '$e->{texture_name}' not found for"
+          . " quad '$f', using placeholder\n";
+        $i = $ctx->{placeholder_texture};
+      }
       my $t = texture_pov $i;
       em "  texture_list {\n    1, texture { $t }\n  }\n";
     }
@@ -581,6 +599,10 @@ sub emit_meshes {
       my $t = $s->{texture_name};
       next if $tv{$t}++;
       my $i = find_mesh_texture $t;
+      unless ($i) {
+        emit_placeholder_texture;
+        next;
+      }
       my $n = texture_pov $i;
       em<<"EOS";
 #declare $n = texture {
@@ -614,6 +636,12 @@ EOS
     em "  texture_list {\n    $sn";
     for my $s (@$sa) {
       my $i = find_mesh_texture $s->{texture_name};
+      unless ($i) {
+        warn "WARNING: texture '$s->{texture_name}' not found for"
+          . " mesh '$f', using placeholder\n";
+        $i = $ctx->{placeholder_texture};
+      }
+      my $t = texture_pov $i;
       my $tn = texture_pov $i;
       em ", texture { $tn }";
     }
