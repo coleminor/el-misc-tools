@@ -676,8 +676,7 @@ EOS
         $i = $ctx->{placeholder_texture};
       }
       my $t = texture_pov $i;
-      my $tn = texture_pov $i;
-      em ", texture { $tn }";
+      em ", texture { $t }";
     }
     em "\n  }\n";
     my $ia = $e->{indices};
