@@ -70,6 +70,7 @@ my $ctx = {
   blur => 0,
   cull => 0.0,
   antialias => 0,
+  remove_backfacing => 0,
 };
 
 my $map = {};
@@ -429,6 +430,27 @@ sub setup_pov {
   $ctx->{povfile} = $n;
 }
 
+sub deg2rad { $_[0] * 0.0174532925199433 }
+
+sub is_backfacing {
+  return unless $ctx->{remove_backfacing};
+  my ($o, $e) = @_;
+  my $r = $o->{rotation};
+  my $x = deg2rad $r->[0];
+  my $y = deg2rad $r->[1];
+  my $cx = cos $x;
+  my $cy = cos $y;
+  my $sx = sin $x;
+  my $sy = sin $y;
+  my $u = [-$sy, $sx * $cy, $cx * $cy];
+  for my $v (@{$e->{vertices}}) {
+    my $n = $v->{normal};
+    return if vec_dot($n, $u) > 0.00001;
+  }
+  vprint "Skipping backfacing object $o->{id} '$o->{entity_name}'\n";
+  return 1;
+}
+
 sub terrain_pov {
   return "Terrain$_[0]";
 }
@@ -588,7 +610,9 @@ EOS
   for my $o (@{$map->{quad_objects}}) {
     next if was_deleted $o;
     my $e = $o->{entity_name};
-    next unless $map->{quad_entities}{$e};
+    my $d = $map->{quad_entities}{$e};
+    next unless $d;
+    next if is_backfacing $o, $d;
     my $n = entity_pov $e;
     my $p = vec_pov $o->{position};
     my $r = vec_pov $o->{rotation};
@@ -676,7 +700,9 @@ EOS
   for my $o (@{$map->{mesh_objects}}) {
     next if was_deleted $o;
     my $e = $o->{entity_name};
-    next unless $map->{mesh_entities}{$e};
+    my $d = $map->{mesh_entities}{$e};
+    next unless $d;
+    next if is_backfacing $o, $d;
     my $n = entity_pov $e;
     my $p = vec_pov $o->{position};
     my $r = vec_pov $o->{rotation};
@@ -802,6 +828,8 @@ sub setup_opts {
         '=f', \$ctx->{cull}],
       [[qw(a antialias)], 'render with antialiasing enabled (slow!)',
         '+', \$ctx->{antialias}],
+      [[qw(r remove-backfacing)], 'remove objects whose normals are all backfacing',
+        '+', \$ctx->{remove_backfacing}],
     ],
   );
   $g->opts;
