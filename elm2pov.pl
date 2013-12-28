@@ -68,6 +68,7 @@ my $ctx = {
   cull => 0.0,
   antialias => 0,
   remove_backfacing => 0,
+  collapse_pattern => undef,
 };
 
 my $map = {};
@@ -608,6 +609,29 @@ EOS
   vprint "Emitted $c quad objects\n";
 }
 
+sub matches_collapse_pattern {
+  my ($f) = @_;
+  my $p = $ctx->{collapse_pattern};
+  return defined $p ? $f =~ $p : 0;
+}
+
+sub collapse_downface {
+  my ($f, $e) = @_;
+  my @t = @{$e->{vertices}}[@$f];
+  my ($v0, $v1, $v2) = map { $_->{position} } @t;
+  my $v0x = $v0->[0];
+  my $v0y = $v0->[1];
+  my $ax = $v1->[0] - $v0x;
+  my $ay = $v1->[1] - $v0y;
+  my $bx = $v2->[0] - $v0x;
+  my $by = $v2->[1] - $v0y;
+  my $d = $ax * $by - $bx * $ay;
+  if ($d <= 0.0) {
+    $f->[1] = $f->[0];
+    $f->[2] = $f->[0];
+  }
+}
+
 sub emit_meshes {
   my $c = 0;
   my %tv;
@@ -668,12 +692,15 @@ EOS
     my $ia = $e->{indices};
     my $fn = @$ia / 3;
     em "  face_indices {\n    $fn";
+    my $cd = matches_collapse_pattern $f;
     for (my $si = 0; $si < $sn; $si++) {
       my $s = $sa->[$si];
       my $is = $s->{index_element_offset};
       my $ie = $is + $s->{index_element_count};
       for (my $i = $is; $i < $ie; $i += 3) {
-        em ", ".vec_pov(@{$ia}[$i..$i+2]).", $si";
+        my $fi = [@{$ia}[$i..$i+2]];
+        collapse_downface $fi, $e if $cd;
+        em ", ".vec_pov(@$fi).", $si";
       }
     }
     em "\n  }\n";
@@ -808,6 +835,8 @@ sub setup_opts {
         '+', \$ctx->{antialias}],
       [[qw(r remove-backfacing)], 'remove objects whose normals are all backfacing',
         '+', \$ctx->{remove_backfacing}],
+      [[qw(x collapse-pattern)], 'collapse downfacing triangles on matching meshes',
+        '=s', \$ctx->{collapse_pattern}],
     ],
   );
   $g->opts;
