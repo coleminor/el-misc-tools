@@ -25,14 +25,12 @@ use strict;
 our $VERSION = 0.7;
 
 use Carp qw(confess);
-use Data::Dumper; $Data::Dumper::Indent = 1;
 use File::Basename;
 use File::chdir;
 use File::Copy;
 use File::Spec::Functions qw(catfile);
-use File::PathConvert qw(realpath rel2abs);
+use File::PathConvert qw(realpath);
 use File::Path::Tiny;
-use File::Temp qw(tempfile);
 use Games::EternalLands::Loader;
 use Getopt::Compact;
 use Image::Size;
@@ -43,7 +41,6 @@ use POSIX qw(strftime);
 my $ctx = {
   progname => 'elm2pov',
   verbose => 0,
-  debug => 0,
   regenerate => 0,
   generated => {},
   contpath => {
@@ -76,7 +73,6 @@ my $ctx = {
 my $map = {};
 
 sub vprint { print @_ if $ctx->{verbose}; }
-sub dprint { print @_ if $ctx->{debug}; }
 
 sub run {
   my ($c) = @_;
@@ -89,16 +85,6 @@ sub run {
     confess "Failed to run external command: $!\nCommand was: @$c\n";
   }
   return $e == 0;
-}
-
-sub dumpit {
-  return unless $ctx->{debug};
-  my ($n, $d) = @_;
-  if (not defined $d) {
-    $d = $n;
-    $n = 'data';
-  }
-  print Data::Dumper->Dump([$d], [$n]);
 }
 
 sub make_dir {
@@ -765,7 +751,6 @@ sub cull_meshes {
   my $tl = $map->{tile_length};
   my $l = 2.0 * $rs / $tl;
   my $b = $l * $l;
-  dprint "cull params: m=$m rs=$rs tl=$tl l=$l b=$b\n";
   my %r;
   my $INF = 1000000.0;
   while (my ($f, $e) = each %{$map->{mesh_entities}}) {
@@ -779,10 +764,6 @@ sub cull_meshes {
     }
     my $a = $b * ($X - $x) * ($Y - $y);
     $r{$f} = $e if $a > $m;
-    if ($ctx->{debug}) {
-      dprint "mesh \"$f\" x=$x y=$y X=$X Y=$Y | a=$a "
-        .($a > $m ? 'kept' : 'CULLED')."\n";
-    }
   }
   my $c = keys %{$map->{mesh_entities}};
   my $n = keys %r;
@@ -799,8 +780,6 @@ sub setup_opts {
     struct => [
       [[qw(v verbose)], 'print more messages about what is happening',
         '+', \$ctx->{verbose}],
-      [[qw(d debug)], 'print LOTS of low level debugging information',
-        '+', \$ctx->{debug}],
       [[qw(c contdir)], 'read game content files from this directory',
         '=s', \$ctx->{contdir}],
       [[qw(w workdir)], 'store intermediate files in this directory',
