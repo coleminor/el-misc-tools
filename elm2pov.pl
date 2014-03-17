@@ -215,6 +215,41 @@ sub load_entities {
   vprint "Loaded $c $k entities\n";
 }
 
+sub is_transparent {
+  my ($o) = @_;
+  return exists $o->{blending_level} && $o->{blending_level} == 1;
+}
+
+sub shallow_copy {
+  my ($e) = @_;
+  my $n = {};
+  while (my ($k, $v) = each %$e) {
+    $n->{$k} = $v;
+  }
+  return $n;
+}
+
+sub create_transparent_meshes {
+  my $c = 0;
+  my $d = $map->{'mesh_entities'};
+  for my $o (@{$map->{'mesh_objects'}}) {
+    next unless is_transparent $o;
+    my $n = $o->{entity_name};
+    my $e = $d->{$n};
+    my $nt = $n . '_t';
+    if ($e) {
+      my $et = shallow_copy $e;
+      $et->{transparent} = 1;
+      $d->{$nt} = $et;
+      $o->{entity_name} = $nt;
+      $c++;
+    } else {
+      $d->{$nt} = $e;
+    }
+  }
+  vprint "Created $c transparent meshes\n" if $c;
+}
+
 sub setup_map {
   my ($n) = @_;
   print "Reading $n from $ctx->{contdir}\n";
@@ -223,6 +258,7 @@ sub setup_map {
     or die "Failed to load map '$n': ".$l->errstr."\n";
   load_entities 'quad';
   load_entities 'mesh';
+  create_transparent_meshes;
 }
 
 sub find_texture {
@@ -641,18 +677,25 @@ sub emit_meshes {
     my $sa = $e->{submeshes};
     for my $s (@$sa) {
       my $t = $s->{texture_name};
-      next if $tv{$t}++;
+      my $k = $t;
+      $k .= '_t' if $e->{transparent};
+      next if $tv{$k}++;
       my $i = find_mesh_texture $t;
       unless ($i) {
         emit_placeholder_texture;
         next;
       }
       my $n = texture_pov $i;
+      my $tt = '';
+      if ($e->{transparent}) {
+        $n .= '_t';
+        $tt = 'filter all 0.9';
+      }
       em<<"EOS";
 #declare $n = texture {
   uv_mapping scale <1, -1, 1>
   finish { ambient 1 diffuse $td }
-  pigment { image_map { png "$i" } }
+  pigment { image_map { png "$i" $tt } }
 }
 EOS
       $c++;
@@ -686,6 +729,7 @@ EOS
         $i = $ctx->{placeholder_texture};
       }
       my $t = texture_pov $i;
+      $t .= '_t' if $e->{transparent};
       em ", texture { $t }";
     }
     em "\n  }\n";
