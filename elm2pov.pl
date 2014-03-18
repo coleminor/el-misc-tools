@@ -386,8 +386,10 @@ sub emit_intro {
   my $cl = $ctx->{cmdline};
   my $sx = $map->{tile_length} * 0.5;
   my $sy = $map->{tile_breadth} * 0.5;
-  my $c = vec_pov $sx / 2, $sy / 2, 100;
-  my $l = vec_pov $sx / 2, $sy / 2, 0;
+  my $cx = $sx / 2;
+  my $cy = $sx / 2 + 0.5;
+  my $c = vec_pov $cx, $cy, 100;
+  my $l = vec_pov $cx, $cy, 0;
   my $a = "<1,1,1>";
   if ($ctx->{render_lights}) {
     my $v = $map->{ambient_light};
