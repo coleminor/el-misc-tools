@@ -35,3 +35,7 @@ Copies rectangular regions from one map to another.
 elm-remove-bad-lights.py
 ------------------------
 Removes or just finds all invalid lights in an map file.
+
+elmhdr
+------
+A small and fast program to display map file headers.
