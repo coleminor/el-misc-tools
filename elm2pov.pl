@@ -69,6 +69,7 @@ my $ctx = {
   antialias => 0,
   remove_backfacing => 0,
   collapse_pattern => undef,
+  terrain_colors => 0,
 };
 
 my $map = {};
@@ -308,9 +309,10 @@ sub find_terrain_texture {
   $t = 231 if $t == 0 and $map->{indoors};
   my $n = "tile$t";
   my $i = find_texture $n, $ctx->{contpath}{terr};
-  return $i if not $i or not $ctx->{mipmaps};
+  return $i unless $i and ($ctx->{mipmaps}
+    or $ctx->{terrain_colors});
   my $s = $ctx->{render_size} / $map->{terrain_length};
-  my $p = 1024;
+  my $p = $ctx->{terrain_colors} ? 1 : 1024;
   while ($p > 1 and $p / 2 > $s) {
     $p /= 2;
   }
@@ -327,13 +329,13 @@ sub find_terrain_texture {
   $r = "$r-$p.$e";
   return $r if exists $ctx->{generated}{$r};
   return $r if -e $r and not $ctx->{regenerate};
-  print "Generating terrain texture mipmaps\n" unless $ctx->{mipmapmsg}++;
-  vprint "Creating ${p}x$p terrain texture mipmap from $i\n";
+  print "Generating terrain texture images\n" unless $ctx->{mipmapmsg}++;
+  vprint "Creating ${p}x$p terrain texture image from $i\n";
   my @c = ($ctx->{cmd_convert}, $i);
   push @c, '-resize', "${p}x$p";
   push @c, '-blur', '0x'.($p / 2) if $ctx->{blur};
   push @c, $r;
-  run \@c or die "Mipmap generation failed: $!\n";
+  run \@c or die "Image resizing failed: $!\n";
   $ctx->{generated}{$r}++;
   return $r;
 }
@@ -883,6 +885,8 @@ sub setup_opts {
         '+', \$ctx->{remove_backfacing}],
       [[qw(x collapse-pattern)], 'collapse downfacing triangles on matching meshes',
         '=s', \$ctx->{collapse_pattern}],
+      [[qw(t terrain-colors)], 'use solid colors for terrain tiles',
+        '+', \$ctx->{terrain_colors}],
     ],
   );
   $g->opts;
