@@ -69,7 +69,7 @@ my $ctx = {
   antialias => 0,
   remove_backfacing => 0,
   collapse_pattern => undef,
-  terrain_colors => 0,
+  solid_terrain => 0,
 };
 
 my $map = {};
@@ -310,9 +310,9 @@ sub find_terrain_texture {
   my $n = "tile$t";
   my $i = find_texture $n, $ctx->{contpath}{terr};
   return $i unless $i and ($ctx->{mipmaps}
-    or $ctx->{terrain_colors});
+    or $ctx->{solid_terrain});
   my $s = $ctx->{render_size} / $map->{terrain_length};
-  my $p = $ctx->{terrain_colors} ? 1 : 1024;
+  my $p = $ctx->{solid_terrain} ? 1 : 1024;
   while ($p > 1 and $p / 2 > $s) {
     $p /= 2;
   }
@@ -885,8 +885,8 @@ sub setup_opts {
         '+', \$ctx->{remove_backfacing}],
       [[qw(x collapse-pattern)], 'collapse downfacing triangles on matching meshes',
         '=s', \$ctx->{collapse_pattern}],
-      [[qw(t terrain-colors)], 'use solid colors for terrain tiles',
-        '+', \$ctx->{terrain_colors}],
+      [[qw(S solid-terrain)], 'use solid colors for terrain tiles',
+        '+', \$ctx->{solid_terrain}],
     ],
   );
   $g->opts;
