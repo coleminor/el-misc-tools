@@ -217,7 +217,7 @@ sub load_entities {
   vprint "Loaded $c $k entities\n";
 }
 
-sub is_transparent {
+sub is_blended {
   my ($o) = @_;
   return exists $o->{blending_level} && $o->{blending_level} == 1;
 }
@@ -231,17 +231,17 @@ sub shallow_copy {
   return $n;
 }
 
-sub create_transparent_meshes {
+sub create_blended_meshes {
   my $c = 0;
   my $d = $map->{'mesh_entities'};
   for my $o (@{$map->{'mesh_objects'}}) {
-    next unless is_transparent $o;
+    next unless is_blended $o;
     my $n = $o->{entity_name};
     my $e = $d->{$n};
     my $nt = $n . '_t';
     if ($e) {
       my $et = shallow_copy $e;
-      $et->{transparent} = 1;
+      $et->{blend} = 1;
       $d->{$nt} = $et;
       $o->{entity_name} = $nt;
       $c++;
@@ -249,7 +249,7 @@ sub create_transparent_meshes {
       $d->{$nt} = $e;
     }
   }
-  vprint "Created $c transparent meshes\n" if $c;
+  vprint "Created $c blended meshes\n" if $c;
 }
 
 sub setup_map {
@@ -260,7 +260,7 @@ sub setup_map {
     or die "Failed to load map '$n': ".$l->errstr."\n";
   load_entities 'quad';
   load_entities 'mesh';
-  create_transparent_meshes;
+  create_blended_meshes;
 }
 
 sub find_texture {
@@ -693,7 +693,7 @@ sub emit_meshes {
     for my $s (@$sa) {
       my $t = $s->{texture_name};
       my $k = $t;
-      $k .= '_t' if $e->{transparent};
+      $k .= '_t' if $e->{blend};
       next if $tv{$k}++;
       my $i = find_mesh_texture $t;
       unless ($i) {
@@ -702,7 +702,7 @@ sub emit_meshes {
       }
       my $n = texture_pov $i;
       my $tt = '';
-      if ($e->{transparent}) {
+      if ($e->{blend}) {
         $n .= '_t';
         $tt = 'filter all 0.9';
       }
@@ -744,7 +744,7 @@ EOS
         $i = $ctx->{placeholder_texture};
       }
       my $t = texture_pov $i;
-      $t .= '_t' if $e->{transparent};
+      $t .= '_t' if $e->{blend};
       em ", texture { $t }";
     }
     em "\n  }\n";
