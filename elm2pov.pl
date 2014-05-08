@@ -70,6 +70,7 @@ my $ctx = {
   remove_backfacing => 0,
   collapse_pattern => undef,
   solid_terrain => 0,
+  transparent_background => 0,
 };
 
 my $map = {};
@@ -422,6 +423,9 @@ global_settings {
   assumed_gamma 2.2
 }
 EOS
+  if ($ctx->{transparent_background}) {
+    em "background { color rgbf <0,0,0,1> }\n";
+  }
   vprint "Emitted intro\n";
 }
 
@@ -487,6 +491,12 @@ sub is_water_terrain {
   return ($t == 0 or (230 < $t and $t < 255));
 }
 
+sub is_transparent_terrain {
+  my ($t) = @_;
+  return 0 unless $ctx->{transparent_background};
+  return $t == 39;
+}
+
 sub emit_terrains {
   my %ti;
   my $c = 0;
@@ -534,6 +544,7 @@ sub emit_terrains {
     for my $x (0 .. $tl - 1) {
       my $t = $map->{terrain_map}[$y * $tl + $x];
       next unless $ti{$t};
+      next if is_transparent_terrain $t;
       $px = $x * 3;
       $pz = is_water_terrain($t) ? -0.25 : 0;
       my $n = terrain_pov $t;
@@ -805,6 +816,7 @@ sub render {
   push @c, "+I$p", "+O$t";
   push @c, "+W$s", "+H$s";
   push @c, "+A" if $ctx->{antialias};
+  push @c, "+UA" if $ctx->{transparent_background};
   print "Rendering $f\n";
   run \@c or die "Render failed: $!\n";
   if (not $r) {
@@ -887,6 +899,8 @@ sub setup_opts {
         '=s', \$ctx->{collapse_pattern}],
       [[qw(S solid-terrain)], 'use solid colors for terrain tiles',
         '+', \$ctx->{solid_terrain}],
+      [[qw(t transparent-background)], 'output transparent background instead of black',
+        '+', \$ctx->{transparent_background}],
     ],
   );
   $g->opts;
