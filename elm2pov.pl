@@ -22,7 +22,7 @@
 use warnings;
 use strict;
 
-our $VERSION = 0.9;
+our $VERSION = 0.95;
 
 use Carp qw(confess);
 use File::Basename;
