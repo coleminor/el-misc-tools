@@ -683,6 +683,12 @@ sub collapse_downface {
   }
 }
 
+sub is_transparent_mesh {
+  my ($e) = @_;
+  return 0 unless $ctx->{transparent_background};
+  return $e eq './3dobjects/tile39.e3d';
+}
+
 sub emit_meshes {
   my $c = 0;
   my %tv;
@@ -771,6 +777,7 @@ EOS
   for my $o (@{$map->{mesh_objects}}) {
     next if was_deleted $o;
     my $e = $o->{entity_name};
+    next if is_transparent_mesh $e;
     my $d = $map->{mesh_entities}{$e};
     next unless $d;
     next if is_backfacing $o, $d;
