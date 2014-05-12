@@ -244,7 +244,7 @@ static void draw_scale_label(cairo_t *c, const note_t *n) {
   PangoRectangle r;
   const char *f;
   char b[256];
-  int s;
+  int s, i;
   double v, x, y;
   const options_t *o;
 
@@ -258,7 +258,8 @@ static void draw_scale_label(cairo_t *c, const note_t *n) {
   v = 2.0 * SCALE_PART_LENGTH
       * o->scale_multiplier
       * o->map_width / o->image_width;
-  snprintf(b, sizeof b, "%.1f", v);
+  i = round(v);
+  snprintf(b, sizeof b, "%d", i);
   pango_layout_set_text(l, b, -1);
   pango_layout_set_font_description(l, d);
   pango_font_description_free(d);
