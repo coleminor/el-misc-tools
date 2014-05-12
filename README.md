@@ -44,3 +44,7 @@ elm-render-notes
 ----------------
 Creates an overlay image of fancy map symbols from a list
 of notes.
+
+elm-draw-tiles
+--------------
+Creates a black and white image mask of walkable map tiles.
