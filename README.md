@@ -39,3 +39,8 @@ Removes or just finds all invalid lights in an map file.
 elmhdr
 ------
 A small and fast program to display map file headers.
+
+elm-render-notes
+----------------
+Creates an overlay image of fancy map symbols from a list
+of notes.
