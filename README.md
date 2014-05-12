@@ -48,3 +48,8 @@ of notes.
 elm-draw-tiles
 --------------
 Creates a black and white image mask of walkable map tiles.
+
+elm-annotate
+------------
+Simple GUI program to manage the creation and placement
+of map notes.
