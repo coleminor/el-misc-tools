@@ -37,6 +37,6 @@ draw.o: draw.c draw.h note.h options.h utility.h
 image.o: image.c image.h options.h
 main.o: main.c image.h note.h options.h places.h utility.h
 note.o: note.c note.h draw.h options.h places.h utility.h
-options.o: options.c options.h utility.h
+options.o: options.c options.h draw.h note.h places.h utility.h
 places.o: places.c places.h utility.h
 utility.o: utility.c utility.h
