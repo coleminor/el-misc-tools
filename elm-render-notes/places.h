@@ -48,7 +48,7 @@ const char *places_get_long_name(const char *s);
   X(nan, "Nargraw Nord") \
   X(nar, "Naralik") \
   X(nas, "Nargraw Sud") \
-  X(niv, "Nivros") \
+  X(niv, "Nivros-Um") \
   X(nor, "Nord-Thyl") \
   X(nuk, "Nukavuri") \
   X(oub, "Île des Oubliés") \
