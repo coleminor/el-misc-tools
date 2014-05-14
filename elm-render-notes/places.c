@@ -20,6 +20,8 @@
 
 #include "utility.h"
 
+#include <ctype.h>
+
 typedef struct {
   const char *short_form;
   const char *long_form;
@@ -44,6 +46,11 @@ void places_initialize(void) {
   }
 }
 
+static int seems_like_short_form(const char *s) {
+  return islower(s[0]) && islower(s[1])
+    && islower(s[2]) && !s[3];
+}
+
 const char *places_get_long_name(const char *s) {
   int h;
   place_name_t *p;
@@ -56,5 +63,7 @@ const char *places_get_long_name(const char *s) {
     if (h == p->hash)
       return p->long_form;
 
-  die("unrecognized short place name '%s'", s);
+  if (seems_like_short_form(s))
+    die("unrecognized short place name '%s'", s);
+  return NULL;
 }
