@@ -97,6 +97,9 @@ const char *note_get_label(const note_t *n) {
   t = n->text;
   switch (*t) {
   case '.':
+    r = places_get_long_name(t + 1);
+    if (r)
+      break;
   case '=':
     r = t + 1;
     break;
