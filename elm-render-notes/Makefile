@@ -1,4 +1,6 @@
 executable=elm-render-notes
+version_major=0
+version_minor=5
 
 sources= draw.c \
 				 image.c \
@@ -10,7 +12,8 @@ sources= draw.c \
 objects=$(sources:.c=.o)
 
 DEFINES=-DEXECUTABLE_NAME=\"$(executable)\" \
-	-DVERSION_MAJOR=0 -DVERSION_MINOR=4
+	-DVERSION_MAJOR=$(version_major) \
+	-DVERSION_MINOR=$(version_minor)
 
 CC=gcc
 CFLAGS=-O2 -g
