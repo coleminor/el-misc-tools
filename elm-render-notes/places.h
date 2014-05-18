@@ -55,7 +55,7 @@ const char *places_get_long_name(const char *s);
   X(pie, "Pierre Blanche") \
   X(sao, "Saonar Kraw") \
   X(sta, "Starenlith") \
-  X(tah, "Tahraji") \
+  X(tah, "Taharaji") \
   X(tar, "Tarsengaard") \
   X(the, "Thelinor") \
   X(tra, "Trassian") \
