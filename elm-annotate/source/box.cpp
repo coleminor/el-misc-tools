@@ -107,10 +107,10 @@ void Box::do_layout() {
   float u = h ? a.width : a.height;
   size_t e = 0;
   foreach (Space &s, v) {
-    Child &c = m_children[s.position];
-    if (!s.visible) {
+    if (!s.visible)
       continue;
-    } if (c.packing == SHRINK) {
+    Child &c = m_children[s.position];
+    if (c.packing == SHRINK) {
       c.space = std::min(u, s.amount);
       u = std::max(0.0f, u - c.space);
     } else {
