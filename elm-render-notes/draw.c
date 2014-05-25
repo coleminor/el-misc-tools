@@ -30,7 +30,7 @@
 #define POINT_RADIUS 5.0
 #define POINT_OUTLINE 2.0
 #define ARROW_SIZE 20.0
-#define ANCHOR_SIZE 20.0
+#define ANCHOR_SIZE 15.0
 #define SCALE_PART_LENGTH 66.0
 #define SCALE_HEIGHT 10.0
 
