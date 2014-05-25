@@ -3,12 +3,12 @@ version_major=0
 version_minor=5
 
 sources= draw.c \
-				 image.c \
-				 main.c \
-				 note.c	\
-				 options.c \
-				 places.c \
-				 utility.c
+	 image.c \
+	 main.c \
+	 note.c	\
+	 options.c \
+	 places.c \
+	 utility.c
 objects=$(sources:.c=.o)
 
 DEFINES=-DEXECUTABLE_NAME=\"$(executable)\" \
