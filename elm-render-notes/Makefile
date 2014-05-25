@@ -35,6 +35,7 @@ $(executable): $(objects)
 clean:
 	rm -f $(objects) $(executable)
 
+options.o: Makefile
 # gcc -MM *.c
 draw.o: draw.c draw.h note.h options.h utility.h
 image.o: image.c image.h options.h
