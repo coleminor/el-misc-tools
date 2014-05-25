@@ -1,6 +1,6 @@
 executable=elm-render-notes
 version_major=0
-version_minor=5
+version_minor=6
 
 sources= draw.c \
 	 image.c \
