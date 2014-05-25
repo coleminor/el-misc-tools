@@ -85,7 +85,8 @@ static void print_note_help(void) {
     "\n"
     "  =TEXT    map title\n"
     "  .TEXT    place name\n"
-    "  >MAP     route to another map\n"
+    "  >MAP     land route (arrow)\n"
+    "  @MAP     ship route (anchor)\n"
     "\n"
     "otherwise the symbol designates a point:\n";
   puts(s);
