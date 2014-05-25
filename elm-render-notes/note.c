@@ -72,6 +72,7 @@ void note_draw(const note_t *n, cairo_t *c) {
     break;
   case '#':
   case '>':
+  case '@':
     draw_icon(c, n);
     break;
   case 's':
@@ -104,6 +105,7 @@ const char *note_get_label(const note_t *n) {
     r = t + 1;
     break;
   case '>':
+  case '@':
     r = places_get_long_name(t + 1);
     break;
   case 't':

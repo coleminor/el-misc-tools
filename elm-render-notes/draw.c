@@ -30,6 +30,7 @@
 #define POINT_RADIUS 5.0
 #define POINT_OUTLINE 2.0
 #define ARROW_SIZE 20.0
+#define ANCHOR_SIZE 20.0
 #define SCALE_PART_LENGTH 66.0
 #define SCALE_HEIGHT 10.0
 
@@ -211,13 +212,44 @@ static void draw_arrow(cairo_t *c, const note_t *n) {
   cairo_restore(c);
 }
 
+static void draw_anchor(cairo_t *c, const note_t *n) {
+  double x, y, s, p;
+  x = n->x;
+  y = n->y;
+  s = ANCHOR_SIZE;
+  p = M_PI;
+  cairo_save(c);
+  cairo_move_to(c, x, y - 0.2 * s);
+  cairo_arc(c, x, y - 0.35 * s, 0.15 * s, p/2, p*5/2);
+  cairo_rel_line_to(c, 0, 0.6 * s);
+  cairo_arc(c, x, y + 0.1 * s, 0.4 * s, p/2, p*7/8);
+  cairo_move_to(c, x, y + 0.5 * s);
+  cairo_arc_negative(c, x, y + 0.1 * s, 0.4 * s, p/2, p/8);
+  cairo_move_to(c, x - 0.25 * s, y);
+  cairo_rel_line_to(c, 0.5 * s, 0);
+  cairo_set_line_cap(c, CAIRO_LINE_CAP_ROUND);
+  cairo_set_line_width(c, 5);
+  set_cairo_color(c, black);
+  cairo_stroke_preserve(c);
+  cairo_set_line_cap(c, CAIRO_LINE_CAP_SQUARE);
+  cairo_set_line_width(c, 2);
+  set_cairo_color(c, white);
+  cairo_stroke(c);
+  cairo_restore(c);
+}
+
 void draw_icon(cairo_t *c, const note_t *n) {
   double w, x, y;
   PangoLayout *l;
   PangoRectangle r;
 
-  draw_arrow(c, n);
-  w = ARROW_SIZE;
+  if (n->text[0] == '@') {
+    draw_anchor(c, n);
+    w = ANCHOR_SIZE;
+  } else {
+    draw_arrow(c, n);
+    w = ARROW_SIZE;
+  }
 
   l = create_label_layout(c, n);
 
