@@ -53,3 +53,9 @@ elm-annotate
 ------------
 Simple GUI program to manage the creation and placement
 of map notes.
+
+elm-render-routes
+-----------------
+Command line utility for finding paths between different
+ship destinations on continent maps, and drawing them as
+a fancy transparent overlay.
