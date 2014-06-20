@@ -27,7 +27,6 @@
 #include "report.hpp"
 #include "route.hpp"
 
-#include <cstdio>
 #include <map>
 #include <stdexcept>
 #include <vector>
@@ -155,7 +154,6 @@ static void save_output(Image &i) {
 }
 
 static void process_routes() {
-  Format f;
   const Strings &a = g_options->arguments;
   if (a.size() < 1) {
     const char *e = "Missing image argument";
