@@ -35,8 +35,8 @@ size_t to_chars(int v, char *b, size_t l, const char *) {
   return n > l ? 0 : n;
 }
 
-size_t to_chars(unsigned v, char *b, size_t l, const char *) {
-  size_t n = snprintf(b, l, "%u", v);
+size_t to_chars(size_t v, char *b, size_t l, const char *) {
+  size_t n = snprintf(b, l, "%lu", static_cast<unsigned long>(v));
   return n > l ? 0 : n;
 }
 

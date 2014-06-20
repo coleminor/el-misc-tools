@@ -21,12 +21,13 @@
 #include "preprocessor.hpp"
 
 #include <algorithm>
+#include <cstddef>
 #include <string>
 
 size_t to_chars(bool, char *, size_t, const char *);
 size_t to_chars(char, char *, size_t, const char *);
 size_t to_chars(int, char *, size_t, const char *);
-size_t to_chars(unsigned, char *, size_t, const char *);
+size_t to_chars(size_t, char *, size_t, const char *);
 size_t to_chars(float, char *, size_t, const char *);
 size_t to_chars(double, char *, size_t, const char *);
 size_t to_chars(const char *, char *, size_t, const char *);
