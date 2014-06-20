@@ -23,7 +23,7 @@ CFLAGS += -Wall -Wextra -Werror
 CFLAGS += $(DEFINES)
 
 CFLAGS += $(shell pkg-config --cflags pangocairo)
-LDLIBS += $(shell pkg-config --libs pangocairo)
+LDLIBS += $(shell pkg-config --libs pangocairo) -lm
 
 all: $(executable)
 
