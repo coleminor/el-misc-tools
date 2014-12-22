@@ -59,3 +59,8 @@ elm-render-routes
 Command line utility for finding paths between different
 ship destinations on continent maps, and drawing them as
 a fancy transparent overlay.
+
+elm-change-object-id.py
+-----------------------
+Simple script for manipulating map mesh (3d object) IDs.
+
