@@ -374,6 +374,12 @@ sub vec_pov {
   return '<'.join(',', @$v).'>';
 }
 
+sub vec_pov_rot {
+  #Rotation order must be Y, then X, then Z
+  my $v = ref $_[0] eq 'ARRAY' ? $_[0] : \@_;
+  return '<0,'.$v->[1].',0> rotate <'.$v->[0].',0,0> rotate <0,0,'.$v->[2].'>';
+}
+
 sub vec_dot {
   my ($a, $b) = @_;
   return $a->[0] * $b->[0] + $a->[1] * $b->[1] + $a->[2] * $b->[2];
@@ -653,7 +659,7 @@ EOS
     next if is_backfacing $o, $d;
     my $n = entity_pov $e;
     my $p = vec_pov $o->{position};
-    my $r = vec_pov $o->{rotation};
+    my $r = vec_pov_rot $o->{rotation};
     em "object { $n rotate $r translate $p }\n";
     $c++;
   }
