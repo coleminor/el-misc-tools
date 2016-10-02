@@ -789,7 +789,7 @@ EOS
     next if is_backfacing $o, $d;
     my $n = entity_pov $e;
     my $p = vec_pov $o->{position};
-    my $r = vec_pov $o->{rotation};
+    my $r = vec_pov_rot $o->{rotation};
     em "object { $n rotate $r translate $p }\n";
     $c++;
   }
