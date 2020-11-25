@@ -518,10 +518,18 @@ sub emit_terrains {
       em "  5, <0,0>, <0,1>, <1,1>, <1,0>, <0,0>\n";
       em "  scale 3\n";
       if ($w) {
+        my $pig = "<0.2, 0.4, 0.8>"; #normal water
+        if ($t == 240) { $pig = "<0.78, 0.24, 0.09>"; } #lava
+        if ($t == 241) { $pig = "<0.45, 0.33, 0.2>"; } #brown dirty
+        if ($t == 242) { $pig = "<0.4, 0.4, 0.17>"; } #green water similar to brown dirty
+        if ($t == 232) { $pig = "<0.74, 1, 1>"; } #icy water
+        if ($t == 233) { $pig = "<0.11, 0.42, 0>"; } #dark green sewer water
+        if ($t == 231) { $pig = "<0.16, 0.33, 0.29>"; } #darker greenish water (as seen in WS cave that leads to c2 for ex)
         em "  texture {\n";
         em "    finish { ambient 1 diffuse $td }\n";
-        em "    pigment { color rgb <0.2, 0.4, 0.8> }\n";
+        em "    pigment { color rgb $pig }\n";
         em "  }\n";
+        print "Water $w with texture $t uses $i\n";
       }
       em "  texture {\n";
       # NB all images are in screen coordinates
