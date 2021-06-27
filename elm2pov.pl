@@ -374,6 +374,12 @@ sub vec_pov {
   return '<'.join(',', @$v).'>';
 }
 
+sub vec_pov_rot {
+  #Rotation order must be Y, then X, then Z
+  my $v = ref $_[0] eq 'ARRAY' ? $_[0] : \@_;
+  return '<0,'.$v->[1].',0> rotate <'.$v->[0].',0,0> rotate <0,0,'.$v->[2].'>';
+}
+
 sub vec_dot {
   my ($a, $b) = @_;
   return $a->[0] * $b->[0] + $a->[1] * $b->[1] + $a->[2] * $b->[2];
@@ -390,7 +396,7 @@ sub emit_intro {
   my $sx = $map->{tile_length} * 0.5;
   my $sy = $map->{tile_breadth} * 0.5;
   my $cx = $sx / 2;
-  my $cy = $sy / 2 + 0.5;
+  my $cy = $sy / 2;
   my $c = vec_pov $cx, $cy, 100;
   my $l = vec_pov $cx, $cy, 0;
   my $a = "<1,1,1>";
@@ -512,10 +518,18 @@ sub emit_terrains {
       em "  5, <0,0>, <0,1>, <1,1>, <1,0>, <0,0>\n";
       em "  scale 3\n";
       if ($w) {
+        my $pig = "<0.2, 0.4, 0.8>"; #normal water
+        if ($t == 240) { $pig = "<0.78, 0.24, 0.09>"; } #lava
+        if ($t == 241) { $pig = "<0.45, 0.33, 0.2>"; } #brown dirty
+        if ($t == 242) { $pig = "<0.4, 0.4, 0.17>"; } #green water similar to brown dirty
+        if ($t == 232) { $pig = "<0.74, 1, 1>"; } #icy water
+        if ($t == 233) { $pig = "<0.11, 0.42, 0>"; } #dark green sewer water
+        if ($t == 231) { $pig = "<0.16, 0.33, 0.29>"; } #darker greenish water (as seen in WS cave that leads to c2 for ex)
         em "  texture {\n";
         em "    finish { ambient 1 diffuse $td }\n";
-        em "    pigment { color rgb <0.2, 0.4, 0.8> }\n";
+        em "    pigment { color rgb $pig }\n";
         em "  }\n";
+        print "Water $w with texture $t uses $i\n";
       }
       em "  texture {\n";
       # NB all images are in screen coordinates
@@ -653,7 +667,7 @@ EOS
     next if is_backfacing $o, $d;
     my $n = entity_pov $e;
     my $p = vec_pov $o->{position};
-    my $r = vec_pov $o->{rotation};
+    my $r = vec_pov_rot $o->{rotation};
     em "object { $n rotate $r translate $p }\n";
     $c++;
   }
@@ -783,7 +797,7 @@ EOS
     next if is_backfacing $o, $d;
     my $n = entity_pov $e;
     my $p = vec_pov $o->{position};
-    my $r = vec_pov $o->{rotation};
+    my $r = vec_pov_rot $o->{rotation};
     em "object { $n rotate $r translate $p }\n";
     $c++;
   }
